@@ -27,6 +27,30 @@ var Indecision = function (_React$Component) {
     }
 
     _createClass(Indecision, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            try {
+                var json = localStorage.getItem('decisionsed');
+                var decisions = JSON.parse(json);
+
+                if (decisions) {
+                    this.setState(function () {
+                        return { decisions: decisions };
+                    });
+                }
+            } catch (e) {
+                // Do doooo
+            }
+        }
+    }, {
+        key: 'componentDidUpdate',
+        value: function componentDidUpdate(prevProps, prevState) {
+            if (prevState.decisions.length !== this.state.decisions.length) {
+                var json = JSON.stringify(this.state.decisions);
+                localStorage.setItem('decisionsed', json);
+            }
+        }
+    }, {
         key: 'handleDeleteDecisions',
         value: function handleDeleteDecisions() {
             this.setState(function () {
@@ -172,6 +196,11 @@ var Decisions = function Decisions(props) {
             { onClick: props.handleDeleteDecisions },
             'Remove All'
         ),
+        props.decisions.length === 0 && React.createElement(
+            'p',
+            null,
+            'Please add your decision to get application work'
+        ),
         props.decisions.map(function (decision) {
             return React.createElement(Decision, {
                 key: decision,
@@ -253,6 +282,10 @@ var AddDecision = function (_React$Component2) {
             this.setState(function () {
                 return { error: error };
             });
+
+            if (!error) {
+                e.target.elements.decision.value = '';
+            }
         }
     }, {
         key: 'render',

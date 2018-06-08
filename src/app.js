@@ -6,8 +6,28 @@ class Indecision extends React.Component {
         this.handlePick = this.handlePick.bind(this);
         this.handleDeleteDecisionSingular = this.handleDeleteDecisionSingular.bind(this);
         this.state = {
-            decisions: props.decisions
+            decisions: []
         };
+    }
+
+    componentDidMount() {
+        try {
+            const json = localStorage.getItem('decisionsed');
+            const decisions = JSON.parse(json);
+
+            if (decisions) {
+                this.setState(() => ({ decisions }));
+            }
+        } catch (e) {
+            // Do doooo
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.decisions.length !== this.state.decisions.length) {
+            const json = JSON.stringify(this.state.decisions);
+            localStorage.setItem('decisionsed', json);
+        }
     }
 
     handleDeleteDecisions() {
@@ -62,10 +82,6 @@ class Indecision extends React.Component {
         )
     }
 }
-
-Indecision.defaultProps = {
-    decisions: []
-};
 
 const Header = (props) => {
     return (
@@ -124,6 +140,7 @@ const Decisions = (props) => {
     return (
         <div>
             <button onClick={props.handleDeleteDecisions}>Remove All</button>
+            {props.decisions.length === 0 && <p>Please add your decision to get application work</p>}
             {
                 props.decisions.map((decision) => (
                     <Decision
@@ -190,6 +207,10 @@ class AddDecision extends React.Component {
         const error = this.props.handleAddDecision(decision);
 
         this.setState(() => ({ error }));
+
+        if (!error) {
+            e.target.elements.decision.value = '';
+        }
     }
 
     render() {
